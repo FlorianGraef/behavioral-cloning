@@ -71,7 +71,7 @@ To avoid overfitting the dataset was divided into training and validation set an
 
 After unsuccessful experiments with the [Nvidia end-to-end autonomous driving neural network](https://arxiv.org/pdf/1604.07316v1.pdf) I reverted to the LeNet architecture but with increased number of filters of the convolutional layers. Instead of 6 and 16 filters 32 and 64 filters were used. The rational behind this was that the original number of features (6, 16) were insufficient to classify the different situations with adequate granularity. This architecture has as well the benefit of being very simple and fast to train, which aid the development of the model through shorter iterations and might as well be beneficial for inference in an autonomous vehicle which could be limited by available computational power.
 The outcome of this was the model successfullt driving the car around the track as it can be seen in the linked video.
-[Modell driving successfully around track](https://youtu.be/mANc1VkiWEc) 
+[Model driving successfully around track](https://youtu.be/mANc1VkiWEc) 
 
 ## 5 Model Parameter Tuning
 
