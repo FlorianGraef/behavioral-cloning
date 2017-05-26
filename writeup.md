@@ -1,21 +1,3 @@
-#**Behavioral Cloning** 
-
-##Writeup Template
-
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Behavioral Cloning Project**
-
-The goals / steps of this project are the following:
-* Use the simulator to collect data of good driving behavior
-* Build, a convolution neural network in Keras that predicts steering angles from images
-* Train and validate the model with a training and validation set
-* Test that the model successfully drives around track one without leaving the road
-* Summarize the results with a written report
-
-
 [//]: # (Image References)
 
 [image1]: ./images/lenet_architecture.png "Vanilla LeNet Visualization"
@@ -29,14 +11,26 @@ The goals / steps of this project are the following:
 
 ---
 # Behavioral Cloning
-##1 Project goal
+## 1 Project introduction
 
 The aim of this project is to use behavioral cloning to enable a simulated car to drive at least one lap around a race track in a manner which safe for human passengers. This is to be done by recording driving the car around the track, using the recorded data to train a neural network to drive the car around the same track.
  
-## Behavioral Cloning Technique
+### Behavioral Cloning Technique
 
 Behavioral cloning is a technique that tries to capture behavior in a model to apply the modelled behaviour to a similar situation. In this project the copied behaviour is a human driving a car around a race track in a simulator is captured through recording of car telemetry data while driving around the course. 
-The information captured are:
+
+## 2 Project Setup
+
+My github repository for this project contains five main files:
+* model.py is the script to load, normalize and augment the training data as well as to create and train the model
+* drive.py connects to the simulator and uses the model given through a parameter to drive the car in the simulator
+* model.h5 contains the convolutional neural network trained by model.py
+* report.md, the writeup of the project
+* video.mp4 - a recording of the model driving around the first track from the perspective of the center camera
+
+## 3 Generation of Training Data
+
+To train the neural network training data was recorded by driving the car in the simulation around the track. The simulator provided by udacity captures the following information:
 1. camera images from the<br>
     a) front center <br>
     b) front left<br>
@@ -47,26 +41,10 @@ The information captured are:
 4. break
 5. speed
 
-These information were than used to train a neural network based on the LeNet architecture to 
+From these only 1. and 2. were use as input for training.
 
-##2 Project Setup
+As a start a basic dataset was recorded where the focus was put on driving the car as much as possible in the center of the lane. 
 
-My github repository for this project contains five main files:
-* model.py is the script to load, normalize and augment the training data as well as to create and train the model
-* drive.py connects to the simulator and uses the model given through a parameter to drive the car in the simulator
-* model.h5 contains the convolutional neural network trained by model.py
-* report.md, the writeup of the project
-* video.mp4 - a recording of the model driving around the first track from the perspective of the center camera
-
-###2.1 Start
-Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
-```sh
-python drive.py model.h5
-```
-
-##3 Generation of Training Data
-
-To train the neural network training data was recorded by driving the car in the simulation around the track. To begin with a basic dataset was recorded where the focus was laid on driving the car as much as possible in the center of the lane. 
 Doing this with a keyboard results in very stark steering angles as the only possible steering alngles are -25, 0 and +25 degrees. This results in quickly changing steering angles heavily biased towards these three values and not much in between. In curve this causes these stark angles to be applied intermittently. To avoid this unrealistic steering angle pattern behaviour the car was steered with an XBox360 controller which allows smoother, continuous steering angles through the analogue joysticks.
 After recording of basic center of the road driving. With this data the model should be able to learn how to stay in the middle of the road. However the model is not perfect and should be able to respond to situations other than the ideal center road driving. If the car strays to far from the center it will not now how to recover and return to the center.
 To enable the model to steer back to the middle of the road recovery data was generated where the recording was started in an undesirable situation, at the side of the road, and driven back to the center. This was repeated several times. Furthermore extra recordings were made of particularly challenging parts of the track. Those include a bridge with different road texture, a dirt lay by starting in a curve and sometimes strong shadows or dark trees.
@@ -82,7 +60,7 @@ Combining flipping and using all three camera inputs equates a 6-fold increase i
 
 The images were preprocessed using adapative histogram normalization to emphasize detail in low contrast areas, such as shadow. In form of lambda layers the image data was normalized to range from -0.5 to +0.5 and the top 43% and bottom 15% were cropped as they mostly contain irrelevant information such as the sky and the hood of the car. The essential information, relative location to the edge of the road as well as the angle to the edge can be obtained with the remaining section of the image. This reduces the data that needs to be analyzed without losing much relevant information and hence allows quicker training of the neural network.
 
-##4 Model Architecture
+## 4 Model Architecture
 
 The first neural network implemented for this project was an unmodified version of LeNet.
  ![alt text][image1]
@@ -95,7 +73,7 @@ After unsuccessful experiments with the [Nvidia end-to-end autonomous driving ne
 The outcome of this was the model successfullt driving the car around the track as it can be seen in the linked video.
 [Modell driving successfully around track](https://youtu.be/mANc1VkiWEc) 
 
-##5 Model parameter tuning
+## 5 Model Parameter Tuning
 
 This project involved a lengthy trial and error phase that caused the implementation of the early termination and the checkpoint callback. This was benefitial as now instead of saving the model in it's state after last epoch the model was saved whenever it improved. Since it was observed that models do not always perform better on the track with a better meas squared error. A reason for this could be that once the car is off the track due to maybe very few wrong steering anlges it does not matter anymore how perfect the remaining ones would have been predicted.
 The early termination callback function was not strictly necessary with the checkpoint callback function but helped cut training time.
@@ -104,7 +82,7 @@ The default learning rate of the [Adam optimizer](https://keras.io/optimizers/#a
 
 However the key change that enabled the model to succeed driving around the track was the increase in filters of the convolutional layers. This seemed to have an immediate impact on the models performance. However it could be the case that everything else was contributing to a good standard but the neural network was acting as a bottleneck of performance on the track.
 
-##6 Potential Improvements
+## 6 Potential Improvements
 
 I was very happy to finally make the car drive the course successfully. However it took me a long experiementation process to get there so there are some improvements that could help the model become more generalized and lead to even better results.
 1. The steering angles in tight curves seem to be barely enough. To keep the car more in the center of the road it could benefit from stronger steering. Potentially multiplying the steering angles of the training data could help. But as well removing the strong bias towards straight steering angles and steering angles of -0.2 and +0.2 could help. Furthermore this depends as well on recorded training data which is to some extent subject to human racing game bias which contradicts staying in the center of the road.
